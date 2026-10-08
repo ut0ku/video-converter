@@ -1,0 +1,313 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter',
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --color-gold-light: #f7d774;
+  --color-gold: #d4a017;
+  --color-gold-dark: #a67808;
+  --color-gold-deep: #7a5904;
+  --color-gold-ink: #8a6410;
+  --color-gold-flat: #ffc400;
+  --color-apple-purple: #5e5ce6;
+  --color-apple-pink: #ff2d55;
+  --color-apple-green: #30d158;
+  --color-apple-orange: #ff9f0a;
+  --color-apple-teal: #40c8e0;
+
+  --color-canvas: #ffffff;
+  --color-canvas-subtle: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-surface-raised: #fbfbfd;
+  --color-hairline: #d2d2d7;
+  --color-ink: #1d1d1f;
+  --color-ink-secondary: #6e6e73;
+  --color-ink-tertiary: #86868b;
+  --color-tooltip: #1d1d1f;
+  --color-tooltip-ink: #f5f5f7;
+  --color-tooltip-hairline: rgb(255 255 255 / 0.12);
+
+  --radius-card: 1.5rem;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.12);
+  --shadow-float: 0 2px 6px rgb(0 0 0 / 0.04), 0 18px 48px -16px rgb(0 0 0 / 0.18);
+  --shadow-elevated: 0 8px 16px rgb(0 0 0 / 0.06), 0 32px 64px -24px rgb(0 0 0 / 0.24);
+
+  --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 42s linear infinite;
+  --animate-shimmer: shimmer 2.2s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+}
+
+.dark {
+  --color-canvas: #000000;
+  --color-canvas-subtle: #0a0a0c;
+  --color-surface: #141416;
+  --color-surface-raised: #1c1c1f;
+  --color-hairline: #38383c;
+  --color-ink: #f5f5f7;
+  --color-ink-secondary: #a1a1a6;
+  --color-ink-tertiary: #86868b;
+  --color-tooltip: #3a3a3c;
+  --color-tooltip-ink: #f5f5f7;
+  --color-tooltip-hairline: rgb(255 255 255 / 0.16);
+
+  --color-gold-ink: #e8c34f;
+  --color-gold-dark: #c9971f;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-float: 0 2px 6px rgb(0 0 0 / 0.5), 0 18px 48px -16px rgb(0 0 0 / 0.7);
+  --shadow-elevated: 0 8px 16px rgb(0 0 0 / 0.5), 0 32px 64px -24px rgb(0 0 0 / 0.8);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.04);
+  }
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+    transition:
+      background-color 0.5s var(--ease-apple),
+      color 0.5s var(--ease-apple);
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-gold) 24%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1180px] px-5 sm:px-8;
+  }
+
+  .hairline {
+    @apply border-hairline;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      100deg,
+      var(--color-ink) 0%,
+      color-mix(in oklab, var(--color-ink) 45%, var(--color-gold-light)) 45%,
+      var(--color-gold) 78%,
+      color-mix(in oklab, var(--color-ink) 40%, var(--color-gold-dark)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .card {
+    @apply bg-surface border-hairline rounded-card border;
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.5s var(--ease-apple),
+      box-shadow 0.5s var(--ease-apple),
+      background-color 0.5s var(--ease-apple),
+      border-color 0.5s var(--ease-apple);
+  }
+
+  .glass {
+    @apply border-hairline rounded-full border;
+    background: color-mix(in oklab, var(--color-surface) 72%, transparent);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .btn-primary {
+    @apply relative overflow-hidden rounded-full font-semibold text-[#2b1c00];
+    background: #ffc400;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+    transition:
+      transform 0.35s var(--ease-apple),
+      background-color 0.35s var(--ease-apple),
+      box-shadow 0.35s var(--ease-apple);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: #ffd34d;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.985);
+  }
+
+  .btn-primary:disabled {
+    @apply cursor-not-allowed opacity-40;
+    filter: grayscale(0.4);
+  }
+
+  .btn-ghost {
+    @apply border-hairline bg-surface rounded-full border font-medium;
+    transition:
+      transform 0.35s var(--ease-apple),
+      background-color 0.35s var(--ease-apple),
+      border-color 0.35s var(--ease-apple);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    transform: translateY(-1px);
+    @apply bg-surface-raised;
+  }
+
+  .btn-ghost:disabled {
+    @apply cursor-not-allowed opacity-40;
+  }
+
+  .pill-gold {
+    @apply relative overflow-hidden rounded-xl;
+    background: #ffc400;
+    color: #2b1c00;
+  }
+
+  .dark .pill-gold {
+    background: var(--color-gold);
+    color: #2b1c00;
+    box-shadow: none;
+  }
+
+  .eyebrow {
+    @apply text-ink-tertiary inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase;
+  }
+
+  .field {
+    @apply border-hairline bg-surface-raised text-ink w-full rounded-xl border px-3.5 py-2.5 text-sm;
+    transition:
+      border-color 0.3s var(--ease-apple),
+      box-shadow 0.3s var(--ease-apple);
+  }
+
+  .field:hover {
+    @apply border-ink-tertiary;
+  }
+
+  .field:focus {
+    @apply outline-none;
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-gold) 18%, transparent);
+  }
+
+  .chip {
+    @apply border-hairline bg-surface-raised text-ink-secondary inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium;
+  }
+
+  .section-title {
+    @apply text-3xl font-semibold tracking-tight text-balance sm:text-4xl md:text-[2.75rem] md:leading-[1.08];
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--color-hairline) 60%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--color-hairline) 60%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 64px 64px;
+  }
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+/* Range slider — Apple-like */
+input[type='range'].slider {
+  @apply h-1.5 w-full appearance-none rounded-full bg-transparent;
+  background-image: linear-gradient(var(--color-gold-flat), var(--color-gold-flat));
+  background-repeat: no-repeat;
+}
+
+input[type='range'].slider::-webkit-slider-thumb {
+  @apply h-5 w-5 cursor-grab appearance-none rounded-full bg-white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25), 0 0 0 0.5px rgb(0 0 0 / 0.08);
+  transition: transform 0.25s var(--ease-apple);
+}
+
+input[type='range'].slider::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+}
+
+input[type='range'].slider:active::-webkit-slider-thumb {
+  @apply cursor-grabbing;
+  transform: scale(1.04);
+}
+
+input[type='range'].slider::-moz-range-thumb {
+  @apply h-5 w-5 cursor-grab rounded-full border-0 bg-white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25), 0 0 0 0.5px rgb(0 0 0 / 0.08);
+}
+
+input[type='range'].slider:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.25),
+    0 0 0 5px color-mix(in oklab, var(--color-gold) 28%, transparent);
+}
