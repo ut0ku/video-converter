@@ -28,7 +28,7 @@ const ICONS = {
   cloud: Cloud,
 }
 
-export default function Features() {
+export default function Features({ onRegister }) {
   return (
     <section id="features" className="scroll-mt-24 pt-8 pb-16 sm:pt-9 sm:pb-24">
       <div className="container-page">
@@ -80,7 +80,7 @@ export default function Features() {
           })}
         </div>
 
-        <FeatureBanners />
+        <FeatureBanners onRegister={onRegister} />
       </div>
     </section>
   )
@@ -110,7 +110,7 @@ const USE_CASES = [
   },
 ]
 
-function FeatureBanners() {
+function FeatureBanners({ onRegister }) {
   return (
     <>
       <div id="scenarios" className="mt-16 scroll-mt-24">
@@ -187,10 +187,10 @@ function FeatureBanners() {
           Хотите пользоваться полными функциями программы без ограничений?
         </p>
         <p className="text-ink-secondary mt-4 max-w-xl text-[15px] leading-relaxed text-balance">
-          Зарегистрируйтесь, чтобы рендерить без лимитов, сохранять пресеты и возвращаться к истории
-          задач с любого устройства.
+          Без регистрации доступно 10 конвертаций в день. Зарегистрируйтесь, чтобы получить
+          лимит 100 конвертаций в день и кабинет со статистикой.
         </p>
-        <button type="button" className="btn-primary mt-8 px-8 py-3 text-[15px]">
+        <button type="button" onClick={onRegister} className="btn-primary mt-8 px-8 py-3 text-[15px]">
           Зарегистрироваться
         </button>
       </motion.div>

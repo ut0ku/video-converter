@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
  * Reads real characteristics from the dropped file using the HTML5 video element.
- * No actual transcoding — metadata, duration, aspect ratio and a poster frame only.
+ * Reads metadata locally so the settings panel can be populated before upload.
  */
 export function useVideoProbe() {
   const [meta, setMeta] = useState(null)

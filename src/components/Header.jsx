@@ -10,7 +10,7 @@ const NAV = [
   { label: 'Инструкция', href: '#instructions' },
 ]
 
-export default function Header({ theme, onToggleTheme }) {
+export default function Header({ theme, onToggleTheme, onAccount, user }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -74,9 +74,10 @@ export default function Header({ theme, onToggleTheme }) {
               type="button"
               aria-label="Войти в аккаунт"
               title="Войти в аккаунт"
+              onClick={onAccount}
               className="text-ink-secondary hover:text-ink hover:bg-surface-raised grid h-9 w-9 place-items-center rounded-full transition-all duration-300"
             >
-              <User className="h-[18px] w-[18px]" />
+              {user ? <span className="text-xs font-bold">{user.email?.[0]?.toUpperCase()}</span> : <User className="h-[18px] w-[18px]" />}
             </button>
 
             <button

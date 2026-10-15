@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Info, Settings2, Sparkles, Wand2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FORMAT_BY_ID } from '../data/catalog'
-import { useFakeRender } from '../hooks/useFakeRender'
+import { useRender } from '../hooks/useRender'
 import { useVideoProbe } from '../hooks/useVideoProbe'
 import CustomSettings from './CustomSettings'
 import Dropzone from './Dropzone'
@@ -20,9 +20,10 @@ const DEFAULT_SETTINGS = {
   quality: 72,
 }
 
-export default function Converter() {
+export default function Converter({ auth }) {
   const { meta, poster, status, probe, clear } = useVideoProbe()
-  const render = useFakeRender()
+  const render = useRender(auth?.token, auth?.refresh)
+  const [file, setFile] = useState(null)
 
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const settingsRef = useRef(null)
@@ -59,6 +60,7 @@ export default function Converter() {
   const handleFile = useCallback(
     (file) => {
       render.reset()
+      setFile(file)
       probe(file)
     },
     [probe, render],
@@ -66,6 +68,7 @@ export default function Converter() {
 
   const handleReplace = useCallback(() => {
     render.reset()
+    setFile(null)
     clear()
   }, [clear, render])
 
@@ -80,6 +83,9 @@ export default function Converter() {
   const format = FORMAT_BY_ID[settings.format] ?? FORMAT_BY_ID.mp4
   const hasFile = Boolean(meta)
   const busy = render.state === 'running'
+  const remaining = auth?.usage?.remaining ?? 0
+  const limit = auth?.usage?.limit ?? 10
+  const limitReached = remaining === 0
 
   const summary = useMemo(
     () => [
@@ -132,6 +138,8 @@ export default function Converter() {
                 meta={meta}
                 onCancel={render.cancel}
                 onReset={render.reset}
+                downloadUrl={render.downloadUrl}
+                error={render.error}
               />
             )}
           </div>
@@ -194,10 +202,17 @@ export default function Converter() {
             </div>
 
             <div className="border-hairline mt-4 border-t pt-4">
+              <div className="bg-surface-raised mb-3 rounded-2xl px-3 py-2.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-ink-secondary">Осталось сегодня</span>
+                  <strong className={limitReached ? 'text-apple-orange' : 'text-gold-ink'}>{remaining}/{limit}</strong>
+                </div>
+                {limitReached && <p className="text-apple-orange mt-1 text-xs">Лимит исчерпан. Возвращайтесь завтра.</p>}
+              </div>
               <button
                 type="button"
-                disabled={!hasFile || busy}
-                onClick={render.start}
+                disabled={!hasFile || busy || limitReached}
+                onClick={() => render.start(file, settings, meta)}
                 className="btn-primary relative w-full overflow-hidden rounded-2xl py-3 text-sm"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">

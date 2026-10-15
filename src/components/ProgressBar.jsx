@@ -48,9 +48,20 @@ function StageList({ stage, done }) {
   )
 }
 
-export default function ProgressBar({ progress, stage, state, elapsed, onCancel, onReset, meta }) {
+export default function ProgressBar({
+  progress,
+  stage,
+  state,
+  elapsed,
+  onCancel,
+  onReset,
+  meta,
+  downloadUrl,
+  error,
+}) {
   const running = state === 'running'
   const done = state === 'done'
+  const failed = state === 'error'
   const pct = Math.round(progress)
 
   const estimatedTotal = done ? elapsed : elapsed / Math.max(progress / 100, 0.02)
@@ -66,10 +77,10 @@ export default function ProgressBar({ progress, stage, state, elapsed, onCancel,
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-ink-tertiary text-[11px] font-semibold tracking-[0.14em] uppercase">
-            {done ? 'Готово' : running ? 'Рендеринг' : 'Ожидание'}
+            {done ? 'Готово' : failed ? 'Ошибка' : running ? 'Рендеринг' : 'Ожидание'}
           </p>
           <p className="mt-1 text-xl font-semibold tracking-tight tabular-nums">
-            {done ? 'Файл сконвертирован' : running ? `${pct}%` : 'Не запущено'}
+            {done ? 'Файл сконвертирован' : failed ? 'Конвертация не выполнена' : running ? `${pct}%` : 'Не запущено'}
           </p>
         </div>
 
@@ -125,6 +136,8 @@ export default function ProgressBar({ progress, stage, state, elapsed, onCancel,
         <StageList stage={stage} done={done} />
       </div>
 
+      {error && <p className="text-apple-pink mt-4 text-sm">{error}</p>}
+
       {meta?.duration > 0 && (
         <div className="mt-5">
           <div className="text-ink-tertiary flex items-center justify-between text-[11px] font-medium">
@@ -154,10 +167,14 @@ export default function ProgressBar({ progress, stage, state, elapsed, onCancel,
             transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
             className="mt-6 flex flex-col gap-3 sm:flex-row"
           >
-            <button type="button" className="btn-primary flex h-12 flex-1 items-center justify-center gap-2 text-[15px]">
+            <a
+              href={downloadUrl}
+              download
+              className="btn-primary flex h-12 flex-1 items-center justify-center gap-2 text-[15px]"
+            >
               <Download className="h-[18px] w-[18px]" />
               Скачать файл
-            </button>
+            </a>
             <button type="button" onClick={onReset} className="btn-ghost flex h-12 items-center justify-center gap-2 px-6 text-[15px]">
               <Play className="h-4 w-4" />
               Конвертировать заново
@@ -176,6 +193,19 @@ export default function ProgressBar({ progress, stage, state, elapsed, onCancel,
           >
             <X className="h-4 w-4" />
             Отменить
+          </motion.button>
+        ) : failed ? (
+          <motion.button
+            key="retry"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.4 }}
+            type="button"
+            onClick={onReset}
+            className="btn-ghost mt-6 flex h-12 w-full items-center justify-center gap-2 text-[15px]"
+          >
+            Повторить
           </motion.button>
         ) : null}
       </AnimatePresence>
